@@ -1,6 +1,8 @@
 package com.bhyshchak.rickandmorty.core.di
 
 import com.arkivanov.decompose.ComponentContext
+import androidx.room.Room
+import com.bhyshchak.rickandmorty.core.data.local.db.AppDatabase
 import com.bhyshchak.rickandmorty.core.data.remote.api.RickAndMortyApi
 import com.bhyshchak.rickandmorty.core.data.repository.CharacterRepositoryImpl
 import com.bhyshchak.rickandmorty.core.domain.repository.CharacterRepository
@@ -63,6 +65,22 @@ private val repositoryModule = module {
     }
 }
 
+private val databaseModule = module {
+    single<AppDatabase> {
+        Room.databaseBuilder(
+            context = androidContext(),
+            klass = AppDatabase::class.java,
+            name = "rick_and_morty.db",
+        )
+            // MVP “auto-migration”: during development, if schema changes we recreate DB automatically.
+            .fallbackToDestructiveMigration()
+            .fallbackToDestructiveMigrationOnDowngrade()
+            .build()
+    }
+
+    single { get<AppDatabase>().characterDao() }
+}
+
 private val componentModule = module {
     factory<RootComponent> { (componentContext: ComponentContext) ->
         DefaultRootComponent(
@@ -74,6 +92,7 @@ private val componentModule = module {
 
 val appModules = listOf(
     networkModule,
+    databaseModule,
     repositoryModule,
     componentModule,
 )
