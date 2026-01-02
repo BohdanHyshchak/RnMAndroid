@@ -1,3 +1,30 @@
 <resources>
     <string name="app_name">RickAndMorty</string>
+
+    <string name="character_status_alive">Alive</string>
+    <string name="character_status_dead">Dead</string>
+    <string name="character_status_unknown">Unknown</string>
+
+    <string name="character_gender_female">Female</string>
+    <string name="character_gender_male">Male</string>
+    <string name="character_gender_genderless">Genderless</string>
+    <string name="character_gender_unknown">Unknown</string>
+
+    <string name="loading_characters">Loading characters…</string>
+    <string name="loading_more">Loading more…</string>
+    <string name="error_failed_to_load">Failed to load.</string>
+    <string name="error_failed_to_load_more">Failed to load more.</string>
+    <string name="retry">Retry</string>
+
+    <string name="search_placeholder">Search characters…</string>
+    <string name="filter_status">Status</string>
+    <string name="filter_gender">Gender</string>
+    <string name="empty_results">No characters found.</string>
+
+    <string name="back">Back</string>
+    <string name="details_not_available">Not available.</string>
+    <string name="details_species">Species: %1$s</string>
+    <string name="details_origin">Origin: %1$s</string>
+    <string name="details_location">Location: %1$s</string>
+    <string name="details_episodes">Episodes: %1$d</string>
 </resources>
