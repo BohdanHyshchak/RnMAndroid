@@ -19,6 +19,8 @@ koin = "4.1.1"
 coroutines = "1.10.2"
 kotlinxCollectionsImmutable = "0.4.0"
 coil = "2.7.0"
+paging = "3.3.2"
+accompanist = "0.32.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -57,6 +59,12 @@ kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 
 kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+
+androidx-paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }
+androidx-paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging" }
+androidx-room-paging = { group = "androidx.room", name = "room-paging", version.ref = "room" }
+
+accompanist-swiperefresh = { group = "com.google.accompanist", name = "accompanist-swiperefresh", version.ref = "accompanist" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
