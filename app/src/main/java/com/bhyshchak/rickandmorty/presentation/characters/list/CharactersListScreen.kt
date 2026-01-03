@@ -13,9 +13,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,6 +42,7 @@ import com.bhyshchak.rickandmorty.designsystem.widgets.AppText
 import com.bhyshchak.rickandmorty.designsystem.widgets.AppTextField
 import com.bhyshchak.rickandmorty.features.characters.list.CharactersListComponent
 import com.bhyshchak.rickandmorty.presentation.characters.list.model.CharacterListItemViewData
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Composable
 fun CharactersListScreen(
@@ -45,6 +51,33 @@ fun CharactersListScreen(
 ) {
     val state = component.state.collectAsState().value
     val pagingItems = component.characters.collectAsLazyPagingItems()
+    val listState = rememberLazyListState()
+
+    // Push current scroll position to component state (so it survives navigation to Details).
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.firstVisibleItemIndex to listState.firstVisibleItemScrollOffset }
+            .distinctUntilChanged()
+            .collect { (index, offset) ->
+                component.onIntent(CharactersListComponent.Intent.UpdateScrollPosition(index, offset))
+            }
+    }
+
+    // Restore scroll position once when list is ready (pagingItems.itemCount changes when list loads).
+    // Track last restored position to avoid restoring multiple times.
+    val lastRestoredPosition = remember { mutableStateOf<Pair<Int, Int>?>(null) }
+    LaunchedEffect(pagingItems.itemCount) {
+        val savedPosition = state.listScrollIndex to state.listScrollOffset
+        if (
+            pagingItems.itemCount > 0 &&
+            state.listScrollIndex > 0 &&
+            pagingItems.itemCount > state.listScrollIndex &&
+            lastRestoredPosition.value != savedPosition
+        ) {
+            lastRestoredPosition.value = savedPosition
+            listState.scrollToItem(state.listScrollIndex, state.listScrollOffset)
+        }
+    }
+
 
     ScreenContainer(modifier = modifier) {
         when (pagingItems.loadState.refresh) {
@@ -158,7 +191,10 @@ fun CharactersListScreen(
                     )
                 }
             } else {
-                LazyColumn(verticalArrangement = Arrangement.spacedBy(DS.dimens.s)) {
+                LazyColumn(
+                    state = listState,
+                    verticalArrangement = Arrangement.spacedBy(DS.dimens.s),
+                ) {
                     items(
                         count = pagingItems.itemCount,
                         key = pagingItems.itemKey { it.id },

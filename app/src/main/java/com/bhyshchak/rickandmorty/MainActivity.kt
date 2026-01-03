@@ -2,8 +2,8 @@ package com.bhyshchak.rickandmorty
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.compose.setContent
-import androidx.core.view.WindowCompat
 import com.bhyshchak.rickandmorty.designsystem.theme.AppTheme
 import com.bhyshchak.rickandmorty.features.root.RootComponent
 import com.bhyshchak.rickandmorty.presentation.root.RootContent
@@ -16,7 +16,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, true)
+        enableEdgeToEdge()
 
         val root: RootComponent = getKoin().get { parametersOf(defaultComponentContext()) }
         setContent {

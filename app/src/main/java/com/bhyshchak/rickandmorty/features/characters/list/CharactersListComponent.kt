@@ -17,6 +17,8 @@ interface CharactersListComponent {
     data class State(
         val filters: CharacterFilters = CharacterFilters(),
         val searchQuery: String = "",
+        val listScrollIndex: Int = 0,
+        val listScrollOffset: Int = 0,
     )
 
     sealed interface Intent {
@@ -24,6 +26,7 @@ interface CharactersListComponent {
         data class UpdateSearchQuery(val query: String) : Intent
         data class UpdateStatusFilter(val status: CharacterStatus?) : Intent
         data class UpdateGenderFilter(val gender: CharacterGender?) : Intent
+        data class UpdateScrollPosition(val index: Int, val offset: Int) : Intent
     }
 }
 
