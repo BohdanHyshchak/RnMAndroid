@@ -8,12 +8,14 @@ import com.bhyshchak.rickandmorty.core.domain.model.CharacterFilters
 import com.bhyshchak.rickandmorty.core.domain.model.CharacterGender
 import com.bhyshchak.rickandmorty.core.domain.model.CharacterStatus
 import com.bhyshchak.rickandmorty.core.domain.repository.CharacterRepository
-import com.bhyshchak.rickandmorty.presentation.characters.model.CharacterUi
-import com.bhyshchak.rickandmorty.presentation.characters.model.toUi
+import com.bhyshchak.rickandmorty.presentation.characters.list.model.CharacterListItemViewData
+import com.bhyshchak.rickandmorty.presentation.characters.model.toListItemViewData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -26,6 +28,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
+@OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 class DefaultCharactersListComponent(
     componentContext: ComponentContext,
     private val repository: CharacterRepository,
@@ -60,10 +63,10 @@ class DefaultCharactersListComponent(
             )
         }.distinctUntilChanged()
 
-    override val characters: Flow<PagingData<CharacterUi>> =
+    override val characters: Flow<PagingData<CharacterListItemViewData>> =
         filtersFlow
             .flatMapLatest { filters -> repository.observePagedCharacters(filters) }
-            .map { pagingData -> pagingData.map { it.toUi() } }
+            .map { pagingData -> pagingData.map { it.toListItemViewData() } }
 
     init {
         lifecycle.subscribe(

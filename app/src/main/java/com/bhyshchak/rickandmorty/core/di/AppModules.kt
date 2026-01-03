@@ -73,8 +73,8 @@ private val databaseModule = module {
             name = "rick_and_morty.db",
         )
             // MVP “auto-migration”: during development, if schema changes we recreate DB automatically.
-            .fallbackToDestructiveMigration()
-            .fallbackToDestructiveMigrationOnDowngrade()
+            .fallbackToDestructiveMigration(dropAllTables = true)
+            .fallbackToDestructiveMigrationOnDowngrade(dropAllTables = true)
             .build()
     }
 
