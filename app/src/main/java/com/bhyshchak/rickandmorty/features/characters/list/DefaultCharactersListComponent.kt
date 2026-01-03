@@ -8,8 +8,8 @@ import com.bhyshchak.rickandmorty.core.domain.model.CharacterFilters
 import com.bhyshchak.rickandmorty.core.domain.model.CharacterGender
 import com.bhyshchak.rickandmorty.core.domain.model.CharacterStatus
 import com.bhyshchak.rickandmorty.core.domain.repository.CharacterRepository
-import com.bhyshchak.rickandmorty.features.characters.ui.CharacterUi
-import com.bhyshchak.rickandmorty.features.characters.ui.toUi
+import com.bhyshchak.rickandmorty.presentation.characters.model.CharacterUi
+import com.bhyshchak.rickandmorty.presentation.characters.model.toUi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

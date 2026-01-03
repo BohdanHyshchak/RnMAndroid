@@ -3,7 +3,7 @@ package com.bhyshchak.rickandmorty.features.characters.details
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.bhyshchak.rickandmorty.core.domain.repository.CharacterRepository
-import com.bhyshchak.rickandmorty.features.characters.ui.toUi
+import com.bhyshchak.rickandmorty.presentation.characters.model.toUi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

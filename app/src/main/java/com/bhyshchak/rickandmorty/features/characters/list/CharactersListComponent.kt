@@ -4,7 +4,7 @@ import androidx.paging.PagingData
 import com.bhyshchak.rickandmorty.core.domain.model.CharacterFilters
 import com.bhyshchak.rickandmorty.core.domain.model.CharacterGender
 import com.bhyshchak.rickandmorty.core.domain.model.CharacterStatus
-import com.bhyshchak.rickandmorty.features.characters.ui.CharacterUi
+import com.bhyshchak.rickandmorty.presentation.characters.model.CharacterUi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 

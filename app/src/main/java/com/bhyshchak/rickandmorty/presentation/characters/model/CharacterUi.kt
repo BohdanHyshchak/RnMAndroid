@@ -1,4 +1,4 @@
-package com.bhyshchak.rickandmorty.features.characters.ui
+package com.bhyshchak.rickandmorty.presentation.characters.model
 
 import androidx.annotation.StringRes
 import com.bhyshchak.rickandmorty.R

@@ -1,4 +1,4 @@
-package com.bhyshchak.rickandmorty.features.characters.list
+package com.bhyshchak.rickandmorty.presentation.characters.list
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -31,11 +30,13 @@ import coil.compose.AsyncImage
 import com.bhyshchak.rickandmorty.R
 import com.bhyshchak.rickandmorty.core.domain.model.CharacterGender
 import com.bhyshchak.rickandmorty.core.domain.model.CharacterStatus
+import com.bhyshchak.rickandmorty.designsystem.layout.ScreenContainer
 import com.bhyshchak.rickandmorty.designsystem.theme.DS
 import com.bhyshchak.rickandmorty.designsystem.widgets.AppButton
 import com.bhyshchak.rickandmorty.designsystem.widgets.AppText
 import com.bhyshchak.rickandmorty.designsystem.widgets.AppTextField
-import com.bhyshchak.rickandmorty.features.characters.ui.CharacterUi
+import com.bhyshchak.rickandmorty.features.characters.list.CharactersListComponent
+import com.bhyshchak.rickandmorty.presentation.characters.model.CharacterUi
 
 @Composable
 fun CharactersListScreen(
@@ -45,12 +46,7 @@ fun CharactersListScreen(
     val state = component.state.collectAsState().value
     val pagingItems = component.characters.collectAsLazyPagingItems()
 
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(DS.colors.background)
-            .padding(DS.dimens.m),
-    ) {
+    ScreenContainer(modifier = modifier) {
         when (pagingItems.loadState.refresh) {
             is LoadState.Loading -> {
                 if (pagingItems.itemCount == 0) {
@@ -79,7 +75,7 @@ fun CharactersListScreen(
                         onClick = { pagingItems.retry() },
                     )
                 }
-                return@Box
+                return@ScreenContainer
             }
 
             else -> Unit

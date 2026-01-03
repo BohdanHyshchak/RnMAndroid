@@ -1,10 +1,11 @@
-package com.bhyshchak.rickandmorty.features.root
+package com.bhyshchak.rickandmorty.presentation.root
 
 import androidx.compose.runtime.Composable
 import com.arkivanov.decompose.extensions.compose.stack.Children
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
-import com.bhyshchak.rickandmorty.features.characters.details.CharacterDetailsScreen
-import com.bhyshchak.rickandmorty.features.characters.list.CharactersListScreen
+import com.bhyshchak.rickandmorty.features.root.RootComponent
+import com.bhyshchak.rickandmorty.presentation.characters.details.CharacterDetailsScreen
+import com.bhyshchak.rickandmorty.presentation.characters.list.CharactersListScreen
 
 @Composable
 fun RootContent(component: RootComponent) {

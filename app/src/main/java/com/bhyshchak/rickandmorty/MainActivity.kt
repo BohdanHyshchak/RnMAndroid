@@ -3,10 +3,10 @@ package com.bhyshchak.rickandmorty
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
+import androidx.core.view.WindowCompat
 import com.bhyshchak.rickandmorty.designsystem.theme.AppTheme
 import com.bhyshchak.rickandmorty.features.root.RootComponent
-import com.bhyshchak.rickandmorty.features.root.RootContent
+import com.bhyshchak.rickandmorty.presentation.root.RootContent
 import com.arkivanov.decompose.defaultComponentContext
 import org.koin.android.ext.android.getKoin
 import org.koin.core.parameter.parametersOf
@@ -14,7 +14,7 @@ import org.koin.core.parameter.parametersOf
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        WindowCompat.setDecorFitsSystemWindows(window, true)
 
         val root: RootComponent = getKoin().get { parametersOf(defaultComponentContext()) }
         setContent {

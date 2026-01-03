@@ -1,4 +1,4 @@
-package com.bhyshchak.rickandmorty.features.characters.ui
+package com.bhyshchak.rickandmorty.presentation.characters.model
 
 import com.bhyshchak.rickandmorty.core.domain.model.Character
 import com.bhyshchak.rickandmorty.core.domain.model.CharacterGender

@@ -1,6 +1,6 @@
 package com.bhyshchak.rickandmorty.features.characters.details
 
-import com.bhyshchak.rickandmorty.features.characters.ui.CharacterUi
+import com.bhyshchak.rickandmorty.presentation.characters.model.CharacterUi
 import kotlinx.coroutines.flow.StateFlow
 
 interface CharacterDetailsComponent {
