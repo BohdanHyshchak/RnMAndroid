@@ -1,63 +1,55 @@
 package com.bhyshchak.rickandmorty.features.root
 
+import android.os.Parcelable
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.DelicateDecomposeApi
-import com.arkivanov.decompose.router.stack.ChildStack
-import com.arkivanov.decompose.router.stack.StackNavigation
-import com.arkivanov.decompose.router.stack.childStack
-import com.arkivanov.decompose.router.stack.pop
-import com.arkivanov.decompose.router.stack.push
+import com.arkivanov.decompose.router.slot.ChildSlot
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
+import com.arkivanov.decompose.router.slot.childSlot
+import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.decompose.value.Value
-import com.bhyshchak.rickandmorty.core.domain.repository.CharacterRepository
+import com.bhyshchak.rickandmorty.core.domain.usecase.ObserveCharacterUseCase
+import com.bhyshchak.rickandmorty.core.domain.usecase.ObservePagedCharactersUseCase
 import com.bhyshchak.rickandmorty.features.characters.details.DefaultCharacterDetailsComponent
 import com.bhyshchak.rickandmorty.features.characters.list.DefaultCharactersListComponent
-import kotlinx.serialization.Serializable
+import kotlinx.parcelize.Parcelize
 
-@OptIn(DelicateDecomposeApi::class)
 class DefaultRootComponent(
     componentContext: ComponentContext,
-    private val repository: CharacterRepository,
+    private val observePagedCharacters: ObservePagedCharactersUseCase,
+    private val observeCharacter: ObserveCharacterUseCase,
 ) : RootComponent, ComponentContext by componentContext {
 
-    private val navigation = StackNavigation<Config>()
+    private val detailsNavigation = SlotNavigation<DetailsConfig>()
 
-    override val childStack: Value<ChildStack<*, RootComponent.Child>> =
-        childStack(
-            source = navigation,
-            initialConfiguration = Config.CharactersList,
-            handleBackButton = true,
-            serializer = Config.serializer(),
-            childFactory = ::createChild,
+    override val charactersList =
+        DefaultCharactersListComponent(
+            componentContext = this,
+            observePagedCharacters = observePagedCharacters,
+            onOpenDetails = { id -> detailsNavigation.activate(DetailsConfig(id)) },
         )
 
-    private fun createChild(config: Config, childContext: ComponentContext): RootComponent.Child =
-        when (config) {
-            Config.CharactersList -> RootComponent.Child.CharactersList(
-                component = DefaultCharactersListComponent(
-                    componentContext = childContext,
-                    repository = repository,
-                    onOpenDetails = { id -> navigation.push(Config.CharacterDetails(id)) },
-                )
-            )
+    override val detailsSlot: Value<ChildSlot<*, com.bhyshchak.rickandmorty.features.characters.details.CharacterDetailsComponent>> =
+        childSlot(
+            source = detailsNavigation,
+            serializer = null,
+            handleBackButton = true,
+            childFactory = ::createDetailsChild,
+        )
 
-            is Config.CharacterDetails -> RootComponent.Child.CharacterDetails(
-                component = DefaultCharacterDetailsComponent(
-                    componentContext = childContext,
-                    characterId = config.id,
-                    repository = repository,
-                    onBack = { navigation.pop() },
-                )
-            )
-        }
+    private fun createDetailsChild(
+        config: DetailsConfig,
+        childContext: ComponentContext,
+    ): com.bhyshchak.rickandmorty.features.characters.details.CharacterDetailsComponent =
+        DefaultCharacterDetailsComponent(
+            componentContext = childContext,
+            characterId = config.id,
+            observeCharacter = observeCharacter,
+            onBack = { detailsNavigation.dismiss() },
+        )
 
-    @Serializable
-    private sealed interface Config {
-        @Serializable
-        data object CharactersList : Config
-
-        @Serializable
-        data class CharacterDetails(val id: Int) : Config
-    }
+    @Parcelize
+    private data class DetailsConfig(val id: Int) : Parcelable
 }
 
 

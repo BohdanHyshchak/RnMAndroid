@@ -2,7 +2,7 @@ package com.bhyshchak.rickandmorty.features.characters.details
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.lifecycle.Lifecycle
-import com.bhyshchak.rickandmorty.core.domain.repository.CharacterRepository
+import com.bhyshchak.rickandmorty.core.domain.usecase.ObserveCharacterUseCase
 import com.bhyshchak.rickandmorty.presentation.characters.details.CharacterDetailsUiEvent
 import com.bhyshchak.rickandmorty.presentation.characters.details.CharacterDetailsUiState
 import com.bhyshchak.rickandmorty.presentation.characters.model.toDetailsUiModel
@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 class DefaultCharacterDetailsComponent(
     componentContext: ComponentContext,
     private val characterId: Int,
-    private val repository: CharacterRepository,
+    private val observeCharacter: ObserveCharacterUseCase,
     private val onBack: () -> Unit,
 ) : CharacterDetailsComponent, ComponentContext by componentContext {
 
@@ -39,7 +39,7 @@ class DefaultCharacterDetailsComponent(
         )
 
         scope.launch {
-            repository.observeCharacter(characterId)
+            observeCharacter(characterId)
                 .map { it?.toDetailsUiModel() }
                 .collectLatest { uiModel ->
                     _state.value = _state.value.copy(character = uiModel)

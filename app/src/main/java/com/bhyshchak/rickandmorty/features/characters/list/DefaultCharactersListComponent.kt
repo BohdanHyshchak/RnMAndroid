@@ -6,7 +6,7 @@ import androidx.paging.map
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.bhyshchak.rickandmorty.core.domain.model.CharacterFilters
-import com.bhyshchak.rickandmorty.core.domain.repository.CharacterRepository
+import com.bhyshchak.rickandmorty.core.domain.usecase.ObservePagedCharactersUseCase
 import com.bhyshchak.rickandmorty.presentation.characters.list.CharactersListUiEvent
 import com.bhyshchak.rickandmorty.presentation.characters.list.CharactersListUiState
 import com.bhyshchak.rickandmorty.presentation.characters.list.model.CharacterListItemUiModel
@@ -33,7 +33,7 @@ import kotlinx.coroutines.flow.stateIn
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 class DefaultCharactersListComponent(
     componentContext: ComponentContext,
-    private val repository: CharacterRepository,
+    private val observePagedCharacters: ObservePagedCharactersUseCase,
     private val onOpenDetails: (Int) -> Unit,
 ) : CharactersListComponent, ComponentContext by componentContext {
 
@@ -67,7 +67,7 @@ class DefaultCharactersListComponent(
 
     override val characters: Flow<PagingData<CharacterListItemUiModel>> =
         filtersFlow
-            .flatMapLatest { filters -> repository.observePagedCharacters(filters).cachedIn(scope) }
+            .flatMapLatest { filters -> observePagedCharacters(filters).cachedIn(scope) }
             .map { pagingData -> pagingData.map { it.toListItemUiModel() } }
 
     init {
