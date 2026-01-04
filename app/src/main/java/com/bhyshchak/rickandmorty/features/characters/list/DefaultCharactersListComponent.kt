@@ -92,13 +92,6 @@ class DefaultCharactersListComponent(
             is CharactersListComponent.Intent.UpdateGenderFilter -> {
                 _state.value = _state.value.copy(filters = _state.value.filters.copy(gender = intent.gender))
             }
-
-            is CharactersListComponent.Intent.UpdateScrollPosition -> {
-                _state.value = _state.value.copy(
-                    listScrollIndex = intent.index,
-                    listScrollOffset = intent.offset,
-                )
-            }
         }
     }
 }
