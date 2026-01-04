@@ -95,8 +95,6 @@ dependencies {
 
     implementation(libs.kotlinx.collections.immutable)
     implementation(libs.coil.compose)
-    
-    implementation(libs.accompanist.swiperefresh)
 
     implementation(libs.androidx.paging.runtime)
     implementation(libs.androidx.paging.compose)
