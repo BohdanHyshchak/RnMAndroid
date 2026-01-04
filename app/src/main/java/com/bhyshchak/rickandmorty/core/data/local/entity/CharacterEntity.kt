@@ -6,11 +6,14 @@ import androidx.room.PrimaryKey
 /**
  * MVP cache entity. Stores the "full" character payload we need for list + details.
  *
- * Note: Since this is a new DB setup in this branch, we start with version=1.
+ * Ordering:
+ * - `loadedPage` + `indexInPage` preserve the original API order for the base list.
  */
 @Entity(tableName = "characters")
 data class CharacterEntity(
     @PrimaryKey val id: Int,
+    val loadedPage: Int,
+    val indexInPage: Int,
     val name: String,
     val status: String,
     val species: String,

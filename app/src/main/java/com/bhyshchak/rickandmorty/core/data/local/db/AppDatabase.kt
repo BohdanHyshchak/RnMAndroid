@@ -4,6 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.bhyshchak.rickandmorty.core.data.local.dao.CharacterDao
 import com.bhyshchak.rickandmorty.core.data.local.entity.CharacterEntity
+import com.bhyshchak.rickandmorty.core.data.local.entity.CharactersMetaEntity
 
 /**
  * MVP Room database.
@@ -13,8 +14,11 @@ import com.bhyshchak.rickandmorty.core.data.local.entity.CharacterEntity
  * once schema JSONs are generated and versioning stabilizes.
  */
 @Database(
-    entities = [CharacterEntity::class],
-    version = 1,
+    entities = [
+        CharacterEntity::class,
+        CharactersMetaEntity::class,
+    ],
+    version = 2,
     exportSchema = true,
 )
 abstract class AppDatabase : RoomDatabase() {

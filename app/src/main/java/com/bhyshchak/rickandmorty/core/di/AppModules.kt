@@ -6,8 +6,6 @@ import com.bhyshchak.rickandmorty.core.data.local.db.AppDatabase
 import com.bhyshchak.rickandmorty.core.data.remote.api.RickAndMortyApi
 import com.bhyshchak.rickandmorty.core.data.repository.CharacterRepositoryImpl
 import com.bhyshchak.rickandmorty.core.domain.repository.CharacterRepository
-import com.bhyshchak.rickandmorty.core.inmemory.CharactersStore
-import com.bhyshchak.rickandmorty.core.inmemory.DefaultCharactersStore
 import com.bhyshchak.rickandmorty.features.root.DefaultRootComponent
 import com.bhyshchak.rickandmorty.features.root.RootComponent
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -55,12 +53,11 @@ private val networkModule = module {
 }
 
 private val repositoryModule = module {
-    single<CharactersStore> { DefaultCharactersStore() }
-
     single<CharacterRepository> {
         CharacterRepositoryImpl(
             api = get(),
-            store = get(),
+            database = get(),
+            characterDao = get(),
         )
     }
 }

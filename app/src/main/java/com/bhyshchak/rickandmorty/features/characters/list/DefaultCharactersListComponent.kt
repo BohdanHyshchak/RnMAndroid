@@ -1,6 +1,7 @@
 package com.bhyshchak.rickandmorty.features.characters.list
 
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import androidx.paging.map
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.lifecycle.Lifecycle
@@ -65,7 +66,7 @@ class DefaultCharactersListComponent(
 
     override val characters: Flow<PagingData<CharacterListItemUiModel>> =
         filtersFlow
-            .flatMapLatest { filters -> repository.observePagedCharacters(filters) }
+            .flatMapLatest { filters -> repository.observePagedCharacters(filters).cachedIn(scope) }
             .map { pagingData -> pagingData.map { it.toListItemUiModel() } }
 
     init {
