@@ -18,6 +18,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+
         val root: RootComponent = getKoin().get { parametersOf(defaultComponentContext()) }
         setContent {
             AppTheme {
