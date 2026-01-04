@@ -3,6 +3,8 @@ package com.bhyshchak.rickandmorty.features.characters.details
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.bhyshchak.rickandmorty.core.domain.repository.CharacterRepository
+import com.bhyshchak.rickandmorty.presentation.characters.details.CharacterDetailsUiEvent
+import com.bhyshchak.rickandmorty.presentation.characters.details.CharacterDetailsUiState
 import com.bhyshchak.rickandmorty.presentation.characters.model.toDetailsUiModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,8 +26,8 @@ class DefaultCharacterDetailsComponent(
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
-    private val _state = MutableStateFlow(CharacterDetailsComponent.State())
-    override val state: StateFlow<CharacterDetailsComponent.State> = _state.asStateFlow()
+    private val _state = MutableStateFlow(CharacterDetailsUiState())
+    override val state: StateFlow<CharacterDetailsUiState> = _state.asStateFlow()
 
     init {
         lifecycle.subscribe(
@@ -45,9 +47,9 @@ class DefaultCharacterDetailsComponent(
         }
     }
 
-    override fun onIntent(intent: CharacterDetailsComponent.Intent) {
-        when (intent) {
-            CharacterDetailsComponent.Intent.BackClicked -> onBack()
+    override fun onEvent(event: CharacterDetailsUiEvent) {
+        when (event) {
+            CharacterDetailsUiEvent.BackClicked -> onBack()
         }
     }
 }

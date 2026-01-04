@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,27 +24,26 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
-import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemKey
 import coil.compose.AsyncImage
 import com.bhyshchak.rickandmorty.R
-import com.bhyshchak.rickandmorty.core.domain.model.CharacterGender
-import com.bhyshchak.rickandmorty.core.domain.model.CharacterStatus
 import com.bhyshchak.rickandmorty.designsystem.layout.ScreenContainer
 import com.bhyshchak.rickandmorty.designsystem.theme.DS
 import com.bhyshchak.rickandmorty.designsystem.widgets.AppButton
 import com.bhyshchak.rickandmorty.designsystem.widgets.AppText
 import com.bhyshchak.rickandmorty.designsystem.widgets.AppTextField
-import com.bhyshchak.rickandmorty.features.characters.list.CharactersListComponent
+import com.bhyshchak.rickandmorty.presentation.characters.model.CharacterGenderUi
+import com.bhyshchak.rickandmorty.presentation.characters.model.CharacterStatusUi
 import com.bhyshchak.rickandmorty.presentation.characters.list.model.CharacterListItemUiModel
 
 @Composable
 fun CharactersListScreen(
-    component: CharactersListComponent,
+    state: CharactersListUiState,
+    pagingItems: LazyPagingItems<CharacterListItemUiModel>,
+    onEvent: (CharactersListUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val state = component.state.collectAsState().value
-    val pagingItems = component.characters.collectAsLazyPagingItems()
     val listState = rememberLazyListState()
 
 
@@ -75,7 +73,7 @@ fun CharactersListScreen(
                     )
                     AppButton(
                         text = stringResource(R.string.retry),
-                        onClick = { pagingItems.retry() },
+                        onClick = { onEvent(CharactersListUiEvent.RetryClicked) },
                     )
                 }
                 return@ScreenContainer
@@ -88,7 +86,7 @@ fun CharactersListScreen(
             AppTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = state.searchQuery,
-                onValueChange = { component.onIntent(CharactersListComponent.Intent.UpdateSearchQuery(it)) },
+                onValueChange = { onEvent(CharactersListUiEvent.SearchQueryChanged(it)) },
                 placeholder = stringResource(R.string.search_placeholder),
             )
 
@@ -99,50 +97,37 @@ fun CharactersListScreen(
                 FilterChip(
                     modifier = Modifier.weight(1f),
                     label = stringResource(R.string.filter_status),
-                    selectedValue = state.filters.status?.let { status ->
+                    selectedValue = state.status?.let { status ->
                         stringResource(
                             when (status) {
-                                CharacterStatus.Alive -> R.string.character_status_alive
-                                CharacterStatus.Dead -> R.string.character_status_dead
-                                CharacterStatus.Unknown -> R.string.character_status_unknown
+                                CharacterStatusUi.Alive -> R.string.character_status_alive
+                                CharacterStatusUi.Dead -> R.string.character_status_dead
+                                CharacterStatusUi.Unknown -> R.string.character_status_unknown
                             }
                         )
                     },
-                    onClear = { component.onIntent(CharactersListComponent.Intent.UpdateStatusFilter(null)) },
+                    onClear = { onEvent(CharactersListUiEvent.StatusCleared) },
                     onClick = {
-                        val next = when (state.filters.status) {
-                            null -> CharacterStatus.Alive
-                            CharacterStatus.Alive -> CharacterStatus.Dead
-                            CharacterStatus.Dead -> CharacterStatus.Unknown
-                            CharacterStatus.Unknown -> null
-                        }
-                        component.onIntent(CharactersListComponent.Intent.UpdateStatusFilter(next))
+                        onEvent(CharactersListUiEvent.StatusClicked(state.status))
                     },
                 )
 
                 FilterChip(
                     modifier = Modifier.weight(1f),
                     label = stringResource(R.string.filter_gender),
-                    selectedValue = state.filters.gender?.let { gender ->
+                    selectedValue = state.gender?.let { gender ->
                         stringResource(
                             when (gender) {
-                                CharacterGender.Female -> R.string.character_gender_female
-                                CharacterGender.Male -> R.string.character_gender_male
-                                CharacterGender.Genderless -> R.string.character_gender_genderless
-                                CharacterGender.Unknown -> R.string.character_gender_unknown
+                                CharacterGenderUi.Female -> R.string.character_gender_female
+                                CharacterGenderUi.Male -> R.string.character_gender_male
+                                CharacterGenderUi.Genderless -> R.string.character_gender_genderless
+                                CharacterGenderUi.Unknown -> R.string.character_gender_unknown
                             }
                         )
                     },
-                    onClear = { component.onIntent(CharactersListComponent.Intent.UpdateGenderFilter(null)) },
+                    onClear = { onEvent(CharactersListUiEvent.GenderCleared) },
                     onClick = {
-                        val next = when (state.filters.gender) {
-                            null -> CharacterGender.Female
-                            CharacterGender.Female -> CharacterGender.Male
-                            CharacterGender.Male -> CharacterGender.Genderless
-                            CharacterGender.Genderless -> CharacterGender.Unknown
-                            CharacterGender.Unknown -> null
-                        }
-                        component.onIntent(CharactersListComponent.Intent.UpdateGenderFilter(next))
+                        onEvent(CharactersListUiEvent.GenderClicked(state.gender))
                     },
                 )
             }
@@ -172,7 +157,7 @@ fun CharactersListScreen(
                         val character = pagingItems[index] ?: return@items
                         CharacterListItem(
                             character = character,
-                            onClick = { component.onIntent(CharactersListComponent.Intent.OpenDetails(character.id)) },
+                            onClick = { onEvent(CharactersListUiEvent.CharacterClicked(character.id)) },
                         )
                     }
 
@@ -199,7 +184,7 @@ fun CharactersListScreen(
                                     )
                                     AppButton(
                                         text = stringResource(R.string.retry),
-                                        onClick = { pagingItems.retry() },
+                                        onClick = { onEvent(CharactersListUiEvent.RetryClicked) },
                                     )
                                 }
                             }

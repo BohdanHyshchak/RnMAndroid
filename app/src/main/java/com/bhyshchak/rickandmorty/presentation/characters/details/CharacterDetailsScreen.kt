@@ -24,14 +24,13 @@ import com.bhyshchak.rickandmorty.designsystem.layout.ScreenContainer
 import com.bhyshchak.rickandmorty.designsystem.theme.DS
 import com.bhyshchak.rickandmorty.designsystem.widgets.AppButton
 import com.bhyshchak.rickandmorty.designsystem.widgets.AppText
-import com.bhyshchak.rickandmorty.features.characters.details.CharacterDetailsComponent
 
 @Composable
 fun CharacterDetailsScreen(
-    component: CharacterDetailsComponent,
+    state: CharacterDetailsUiState,
+    onEvent: (CharacterDetailsUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val state = component.state.collectAsState().value
     val character = state.character
 
     ScreenContainer(modifier = modifier) {
@@ -41,7 +40,7 @@ fun CharacterDetailsScreen(
         ) {
             AppButton(
                 text = stringResource(R.string.back),
-                onClick = { component.onIntent(CharacterDetailsComponent.Intent.BackClicked) },
+                onClick = { onEvent(CharacterDetailsUiEvent.BackClicked) },
                 modifier = Modifier.fillMaxWidth(),
             )
 

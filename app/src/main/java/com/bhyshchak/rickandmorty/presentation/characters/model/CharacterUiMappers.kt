@@ -44,4 +44,19 @@ private fun CharacterGender.toGenderUiModel(): CharacterGenderUi =
         CharacterGender.Unknown -> CharacterGenderUi.Unknown
     }
 
+fun CharacterStatusUi.toDomain(): CharacterStatus =
+    when (this) {
+        CharacterStatusUi.Alive -> CharacterStatus.Alive
+        CharacterStatusUi.Dead -> CharacterStatus.Dead
+        CharacterStatusUi.Unknown -> CharacterStatus.Unknown
+    }
+
+fun CharacterGenderUi.toDomain(): CharacterGender =
+    when (this) {
+        CharacterGenderUi.Female -> CharacterGender.Female
+        CharacterGenderUi.Male -> CharacterGender.Male
+        CharacterGenderUi.Genderless -> CharacterGender.Genderless
+        CharacterGenderUi.Unknown -> CharacterGender.Unknown
+    }
+
 

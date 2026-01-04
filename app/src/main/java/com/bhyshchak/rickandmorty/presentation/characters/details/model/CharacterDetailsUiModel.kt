@@ -1,8 +1,10 @@
 package com.bhyshchak.rickandmorty.presentation.characters.details.model
 
+import androidx.compose.runtime.Immutable
 import com.bhyshchak.rickandmorty.presentation.characters.model.CharacterGenderUi
 import com.bhyshchak.rickandmorty.presentation.characters.model.CharacterStatusUi
 
+@Immutable
 data class CharacterDetailsUiModel(
     val id: Int,
     val name: String,

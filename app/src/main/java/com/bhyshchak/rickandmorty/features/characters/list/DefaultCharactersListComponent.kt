@@ -6,10 +6,11 @@ import androidx.paging.map
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.bhyshchak.rickandmorty.core.domain.model.CharacterFilters
-import com.bhyshchak.rickandmorty.core.domain.model.CharacterGender
-import com.bhyshchak.rickandmorty.core.domain.model.CharacterStatus
 import com.bhyshchak.rickandmorty.core.domain.repository.CharacterRepository
+import com.bhyshchak.rickandmorty.presentation.characters.list.CharactersListUiEvent
+import com.bhyshchak.rickandmorty.presentation.characters.list.CharactersListUiState
 import com.bhyshchak.rickandmorty.presentation.characters.list.model.CharacterListItemUiModel
+import com.bhyshchak.rickandmorty.presentation.characters.model.toDomain
 import com.bhyshchak.rickandmorty.presentation.characters.model.toListItemUiModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -38,8 +39,8 @@ class DefaultCharactersListComponent(
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
-    private val _state = MutableStateFlow(CharactersListComponent.State())
-    override val state: StateFlow<CharactersListComponent.State> = _state.asStateFlow()
+    private val _state = MutableStateFlow(CharactersListUiState())
+    override val state: StateFlow<CharactersListUiState> = _state.asStateFlow()
 
     private val debouncedSearchQuery =
         _state
@@ -48,8 +49,8 @@ class DefaultCharactersListComponent(
             .distinctUntilChanged()
             .stateIn(scope, SharingStarted.Lazily, _state.value.searchQuery)
 
-    private val statusFlow = _state.map { it.filters.status }.distinctUntilChanged()
-    private val genderFlow = _state.map { it.filters.gender }.distinctUntilChanged()
+    private val statusFlow = _state.map { it.status }.distinctUntilChanged()
+    private val genderFlow = _state.map { it.gender }.distinctUntilChanged()
 
     private val filtersFlow =
         combine(
@@ -59,8 +60,8 @@ class DefaultCharactersListComponent(
         ) { searchQuery, status, gender ->
             CharacterFilters(
                 name = searchQuery.takeIf { it.isNotBlank() },
-                status = status,
-                gender = gender,
+                status = status?.toDomain(),
+                gender = gender?.toDomain(),
             )
         }.distinctUntilChanged()
 
@@ -79,20 +80,43 @@ class DefaultCharactersListComponent(
         )
     }
 
-    override fun onIntent(intent: CharactersListComponent.Intent) {
-        when (intent) {
-            is CharactersListComponent.Intent.OpenDetails -> onOpenDetails(intent.id)
-            is CharactersListComponent.Intent.UpdateSearchQuery -> {
-                _state.value = _state.value.copy(searchQuery = intent.query)
+    override fun onEvent(event: CharactersListUiEvent) {
+        when (event) {
+            is CharactersListUiEvent.CharacterClicked -> onOpenDetails(event.id)
+            is CharactersListUiEvent.SearchQueryChanged -> _state.value = _state.value.copy(searchQuery = event.query)
+
+            is CharactersListUiEvent.StatusCleared -> _state.value = _state.value.copy(status = null)
+            is CharactersListUiEvent.GenderCleared -> _state.value = _state.value.copy(gender = null)
+
+            is CharactersListUiEvent.StatusClicked -> {
+                val next =
+                    when (event.current) {
+                        null -> com.bhyshchak.rickandmorty.presentation.characters.model.CharacterStatusUi.Alive
+                        com.bhyshchak.rickandmorty.presentation.characters.model.CharacterStatusUi.Alive ->
+                            com.bhyshchak.rickandmorty.presentation.characters.model.CharacterStatusUi.Dead
+                        com.bhyshchak.rickandmorty.presentation.characters.model.CharacterStatusUi.Dead ->
+                            com.bhyshchak.rickandmorty.presentation.characters.model.CharacterStatusUi.Unknown
+                        com.bhyshchak.rickandmorty.presentation.characters.model.CharacterStatusUi.Unknown -> null
+                    }
+                _state.value = _state.value.copy(status = next)
             }
 
-            is CharactersListComponent.Intent.UpdateStatusFilter -> {
-                _state.value = _state.value.copy(filters = _state.value.filters.copy(status = intent.status))
+            is CharactersListUiEvent.GenderClicked -> {
+                val next =
+                    when (event.current) {
+                        null -> com.bhyshchak.rickandmorty.presentation.characters.model.CharacterGenderUi.Female
+                        com.bhyshchak.rickandmorty.presentation.characters.model.CharacterGenderUi.Female ->
+                            com.bhyshchak.rickandmorty.presentation.characters.model.CharacterGenderUi.Male
+                        com.bhyshchak.rickandmorty.presentation.characters.model.CharacterGenderUi.Male ->
+                            com.bhyshchak.rickandmorty.presentation.characters.model.CharacterGenderUi.Genderless
+                        com.bhyshchak.rickandmorty.presentation.characters.model.CharacterGenderUi.Genderless ->
+                            com.bhyshchak.rickandmorty.presentation.characters.model.CharacterGenderUi.Unknown
+                        com.bhyshchak.rickandmorty.presentation.characters.model.CharacterGenderUi.Unknown -> null
+                    }
+                _state.value = _state.value.copy(gender = next)
             }
 
-            is CharactersListComponent.Intent.UpdateGenderFilter -> {
-                _state.value = _state.value.copy(filters = _state.value.filters.copy(gender = intent.gender))
-            }
+            CharactersListUiEvent.RetryClicked -> Unit // handled by Route (pagingItems.retry)
         }
     }
 }
