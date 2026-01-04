@@ -1,6 +1,6 @@
 package com.bhyshchak.rickandmorty.features.characters.details
 
-import com.bhyshchak.rickandmorty.presentation.characters.details.model.CharacterDetailsViewData
+import com.bhyshchak.rickandmorty.presentation.characters.details.model.CharacterDetailsUiModel
 import kotlinx.coroutines.flow.StateFlow
 
 interface CharacterDetailsComponent {
@@ -9,7 +9,7 @@ interface CharacterDetailsComponent {
     fun onIntent(intent: Intent)
 
     data class State(
-        val character: CharacterDetailsViewData? = null,
+        val character: CharacterDetailsUiModel? = null,
     )
 
     sealed interface Intent {

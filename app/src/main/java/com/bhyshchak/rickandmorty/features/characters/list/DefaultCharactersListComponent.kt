@@ -8,8 +8,8 @@ import com.bhyshchak.rickandmorty.core.domain.model.CharacterFilters
 import com.bhyshchak.rickandmorty.core.domain.model.CharacterGender
 import com.bhyshchak.rickandmorty.core.domain.model.CharacterStatus
 import com.bhyshchak.rickandmorty.core.domain.repository.CharacterRepository
-import com.bhyshchak.rickandmorty.presentation.characters.list.model.CharacterListItemViewData
-import com.bhyshchak.rickandmorty.presentation.characters.model.toListItemViewData
+import com.bhyshchak.rickandmorty.presentation.characters.list.model.CharacterListItemUiModel
+import com.bhyshchak.rickandmorty.presentation.characters.model.toListItemUiModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -63,10 +63,10 @@ class DefaultCharactersListComponent(
             )
         }.distinctUntilChanged()
 
-    override val characters: Flow<PagingData<CharacterListItemViewData>> =
+    override val characters: Flow<PagingData<CharacterListItemUiModel>> =
         filtersFlow
             .flatMapLatest { filters -> repository.observePagedCharacters(filters) }
-            .map { pagingData -> pagingData.map { it.toListItemViewData() } }
+            .map { pagingData -> pagingData.map { it.toListItemUiModel() } }
 
     init {
         lifecycle.subscribe(

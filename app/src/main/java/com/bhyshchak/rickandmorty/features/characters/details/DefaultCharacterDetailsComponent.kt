@@ -3,7 +3,7 @@ package com.bhyshchak.rickandmorty.features.characters.details
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import com.bhyshchak.rickandmorty.core.domain.repository.CharacterRepository
-import com.bhyshchak.rickandmorty.presentation.characters.model.toDetailsViewData
+import com.bhyshchak.rickandmorty.presentation.characters.model.toDetailsUiModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -38,9 +38,9 @@ class DefaultCharacterDetailsComponent(
 
         scope.launch {
             repository.observeCharacter(characterId)
-                .map { it?.toDetailsViewData() }
-                .collectLatest { viewData ->
-                    _state.value = _state.value.copy(character = viewData)
+                .map { it?.toDetailsUiModel() }
+                .collectLatest { uiModel ->
+                    _state.value = _state.value.copy(character = uiModel)
                 }
         }
     }

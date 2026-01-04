@@ -37,7 +37,7 @@ import com.bhyshchak.rickandmorty.designsystem.widgets.AppButton
 import com.bhyshchak.rickandmorty.designsystem.widgets.AppText
 import com.bhyshchak.rickandmorty.designsystem.widgets.AppTextField
 import com.bhyshchak.rickandmorty.features.characters.list.CharactersListComponent
-import com.bhyshchak.rickandmorty.presentation.characters.list.model.CharacterListItemViewData
+import com.bhyshchak.rickandmorty.presentation.characters.list.model.CharacterListItemUiModel
 
 @Composable
 fun CharactersListScreen(
@@ -215,7 +215,7 @@ fun CharactersListScreen(
 
 @Composable
 private fun CharacterListItem(
-    character: CharacterListItemViewData,
+    character: CharacterListItemUiModel,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {

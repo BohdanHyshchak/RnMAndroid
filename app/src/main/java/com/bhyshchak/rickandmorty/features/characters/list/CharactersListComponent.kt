@@ -4,13 +4,13 @@ import androidx.paging.PagingData
 import com.bhyshchak.rickandmorty.core.domain.model.CharacterFilters
 import com.bhyshchak.rickandmorty.core.domain.model.CharacterGender
 import com.bhyshchak.rickandmorty.core.domain.model.CharacterStatus
-import com.bhyshchak.rickandmorty.presentation.characters.list.model.CharacterListItemViewData
+import com.bhyshchak.rickandmorty.presentation.characters.list.model.CharacterListItemUiModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 interface CharactersListComponent {
     val state: StateFlow<State>
-    val characters: Flow<PagingData<CharacterListItemViewData>>
+    val characters: Flow<PagingData<CharacterListItemUiModel>>
 
     fun onIntent(intent: Intent)
 
