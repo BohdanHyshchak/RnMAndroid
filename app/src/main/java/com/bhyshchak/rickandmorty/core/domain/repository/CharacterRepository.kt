@@ -6,7 +6,7 @@ import com.bhyshchak.rickandmorty.core.domain.model.CharacterFilters
 import kotlinx.coroutines.flow.Flow
 
 interface CharacterRepository {
-    fun observePagedCharacters(filters: CharacterFilters = CharacterFilters()): Flow<PagingData<Character>>
+    fun observePagedCharacters(filters: CharacterFilters): Flow<PagingData<Character>>
     fun observeCharacter(id: Int): Flow<Character?>
 }
 

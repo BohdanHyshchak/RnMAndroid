@@ -7,10 +7,12 @@ import com.bhyshchak.rickandmorty.core.data.mapper.toQueryParams
 import com.bhyshchak.rickandmorty.core.data.remote.api.RickAndMortyApi
 import com.bhyshchak.rickandmorty.core.domain.model.Character
 import com.bhyshchak.rickandmorty.core.domain.model.CharacterFilters
+import com.bhyshchak.rickandmorty.core.inmemory.CharactersStore
 
 class CharactersPagingSource(
     private val api: RickAndMortyApi,
     private val filters: CharacterFilters,
+    private val store: CharactersStore,
 ) : PagingSource<Int, Character>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Character> {
@@ -26,16 +28,15 @@ class CharactersPagingSource(
             )
 
             val characters = response.results.map { it.toDomain() }
-            val nextKey = if (response.info.next == null) null else page + 1
-            val prevKey = if (page > 1) page - 1 else null
+            store.upsertAll(characters)
 
             LoadResult.Page(
                 data = characters,
-                prevKey = prevKey,
-                nextKey = nextKey,
+                prevKey = if (page > 1) page - 1 else null,
+                nextKey = if (response.info.next == null) null else page + 1,
             )
-        } catch (e: Exception) {
-            LoadResult.Error(e)
+        } catch (t: Throwable) {
+            LoadResult.Error(t)
         }
     }
 

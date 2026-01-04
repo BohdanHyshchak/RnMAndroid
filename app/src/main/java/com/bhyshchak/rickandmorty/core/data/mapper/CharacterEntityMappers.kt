@@ -1,22 +1,44 @@
 package com.bhyshchak.rickandmorty.core.data.mapper
 
+import com.bhyshchak.rickandmorty.core.data.local.entity.CharacterEntity
 import com.bhyshchak.rickandmorty.core.data.remote.dto.CharacterDto
 import com.bhyshchak.rickandmorty.core.domain.model.Character
-import com.bhyshchak.rickandmorty.core.domain.model.CharacterFilters
 import com.bhyshchak.rickandmorty.core.domain.model.CharacterGender
 import com.bhyshchak.rickandmorty.core.domain.model.CharacterStatus
 
-fun CharacterDto.toDomain(): Character =
+private const val EPISODE_URLS_SEPARATOR = "|"
+
+fun CharacterDto.toEntity(
+    loadedPage: Int,
+    indexInPage: Int,
+    nowMillis: Long,
+): CharacterEntity =
+    CharacterEntity(
+        id = id,
+        loadedPage = loadedPage,
+        indexInPage = indexInPage,
+        name = name,
+        status = status.trim().lowercase(),
+        species = species,
+        gender = gender.trim().lowercase(),
+        imageUrl = image,
+        originName = origin.name,
+        locationName = location.name,
+        episodeUrls = episode.joinToString(separator = EPISODE_URLS_SEPARATOR),
+        updatedAtMillis = nowMillis,
+    )
+
+fun CharacterEntity.toDomain(): Character =
     Character(
         id = id,
         name = name,
         status = status.toDomainStatus(),
         species = species,
         gender = gender.toDomainGender(),
-        imageUrl = image,
-        originName = origin.name,
-        locationName = location.name,
-        episodeUrls = episode,
+        imageUrl = imageUrl,
+        originName = originName,
+        locationName = locationName,
+        episodeUrls = episodeUrls.takeIf { it.isNotBlank() }?.split(EPISODE_URLS_SEPARATOR) ?: emptyList(),
     )
 
 private fun String.toDomainStatus(): CharacterStatus =
@@ -33,12 +55,5 @@ private fun String.toDomainGender(): CharacterGender =
         "genderless" -> CharacterGender.Genderless
         else -> CharacterGender.Unknown
     }
-
-fun CharacterFilters.toQueryParams(): Triple<String?, String?, String?> =
-    Triple(
-        name?.takeIf { it.isNotBlank() },
-        status?.name?.lowercase(),
-        gender?.name?.lowercase(),
-    )
 
 

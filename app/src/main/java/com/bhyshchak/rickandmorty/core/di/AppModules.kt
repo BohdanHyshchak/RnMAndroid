@@ -1,10 +1,13 @@
 package com.bhyshchak.rickandmorty.core.di
 
+import com.arkivanov.decompose.ComponentContext
 import androidx.room.Room
 import com.bhyshchak.rickandmorty.core.data.local.db.AppDatabase
 import com.bhyshchak.rickandmorty.core.data.remote.api.RickAndMortyApi
 import com.bhyshchak.rickandmorty.core.data.repository.CharacterRepositoryImpl
 import com.bhyshchak.rickandmorty.core.domain.repository.CharacterRepository
+import com.bhyshchak.rickandmorty.core.domain.usecase.ObserveCharacterUseCase
+import com.bhyshchak.rickandmorty.core.domain.usecase.ObservePagedCharactersUseCase
 import com.bhyshchak.rickandmorty.features.root.DefaultRootComponent
 import com.bhyshchak.rickandmorty.features.root.RootComponent
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -13,6 +16,8 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 import retrofit2.Retrofit
 
@@ -51,6 +56,15 @@ private val networkModule = module {
     }
 }
 
+private val repositoryModule = module {
+    singleOf(::CharacterRepositoryImpl) bind CharacterRepository::class
+}
+
+private val domainModule = module {
+    singleOf(::ObservePagedCharactersUseCase)
+    singleOf(::ObserveCharacterUseCase)
+}
+
 private val databaseModule = module {
     single<AppDatabase> {
         Room.databaseBuilder(
@@ -58,25 +72,21 @@ private val databaseModule = module {
             klass = AppDatabase::class.java,
             name = "rick_and_morty.db",
         )
-            .fallbackToDestructiveMigration()
+            // MVP “auto-migration”: during development, if schema changes we recreate DB automatically.
+            .fallbackToDestructiveMigration(dropAllTables = true)
+            .fallbackToDestructiveMigrationOnDowngrade(dropAllTables = true)
             .build()
     }
-}
 
-private val repositoryModule = module {
-    single<CharacterRepository> {
-        CharacterRepositoryImpl(
-            api = get(),
-            db = get(),
-        )
-    }
+    single { get<AppDatabase>().characterDao() }
 }
 
 private val componentModule = module {
-    factory<RootComponent> { (componentContext: com.arkivanov.decompose.ComponentContext) ->
+    factory<RootComponent> { (componentContext: ComponentContext) ->
         DefaultRootComponent(
             componentContext = componentContext,
-            repository = get(),
+            observePagedCharacters = get(),
+            observeCharacter = get(),
         )
     }
 }
@@ -85,6 +95,7 @@ val appModules = listOf(
     networkModule,
     databaseModule,
     repositoryModule,
+    domainModule,
     componentModule,
 )
 

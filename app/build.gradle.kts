@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
+    id("kotlin-parcelize")
 }
 
 android {
@@ -23,6 +24,11 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+
+    // MVP: export Room schemas for future migrations.
+    // This also enables adding auto-migrations later without losing data.
+    // (Directory will be created by Gradle/Room on first build.)
+    // Note: we use KSP args below for Room.
 
     buildTypes {
         release {
@@ -46,6 +52,12 @@ kotlin {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_11)
     }
+}
+
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+    arg("room.incremental", "true")
+    arg("room.expandProjection", "true")
 }
 
 dependencies {
@@ -85,6 +97,9 @@ dependencies {
     implementation(libs.coil.compose)
     
     implementation(libs.accompanist.swiperefresh)
+
+    implementation(libs.androidx.paging.runtime)
+    implementation(libs.androidx.paging.compose)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
